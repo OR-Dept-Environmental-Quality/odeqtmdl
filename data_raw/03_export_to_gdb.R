@@ -226,7 +226,7 @@ rm(df1, tmdls_by_reach)
 
 time_start2 <- Sys.time()
 
-fc_name <- "TMDLs_by_AU_floline_flat"
+fc_name <- "TMDLs_by_AU_flowline_flat"
 
 gdb_path <- file.path(paths$tmdl_reaches_shp[1], "Maps", "web_map", "OR_TMDLs.gdb")
 
