@@ -32,7 +32,7 @@
 #'          \item tmdl_parameters
 #'          \item tmdl_geo_id
 #'          \item tmdl_targets
-#'          \item tmdl_wqstd
+#'          \item tmdl_ben_use
 #'          }
 #' @param update_reaches logical. if TRUE, imports GIS files and updates the following package tables:
 #'      \itemize{
@@ -277,31 +277,31 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     # Save a copy in data folder (replaces existing)
     save(tmdl_wla, file = file.path(package_path, "data", "tmdl_wla.rda"))
 
-    #- tmdl_wqstd ----------------------------------------------------------------
+    #- tmdl_ben_use ------------------------------------------------------------
 
-    cat("-- tmdl_wqstd\n")
+    cat("-- tmdl_ben_use\n")
 
-    tmdl_wqstd_update <- readxl::read_excel(path = file.path(xlsx_template),
-                                            sheet = "tmdl_wqstd",
+    tmdl_ben_use_update <- readxl::read_excel(path = file.path(xlsx_template),
+                                            sheet = "tmdl_ben_use",
                                             col_names = TRUE, skip = 1,
-                                            col_types = c("text", "text", "numeric")) %>%
+                                            col_types = c("text", "text", "numeric", "text", "text")) %>%
       dplyr::filter(action_id %in% update_action_ids) %>%
       dplyr::left_join(odeqtmdl::LU_pollutant[,c("Pollu_ID", "Pollutant_DEQ")],
                        by = c("TMDL_wq_limited_parameter" = "Pollutant_DEQ")) %>%
-      dplyr::select(action_id, Pollu_ID, wqstd_code) %>%
-      dplyr::arrange(action_id, Pollu_ID, wqstd_code) %>%
+      dplyr::select(action_id, TMDL_wq_limited_parameter, Pollu_ID, ben_use_id,	ben_use) %>%
+      dplyr::arrange(action_id, TMDL_wq_limited_parameter, ben_use_id) %>%
       as.data.frame()
 
     # This updates the whole dataframe
-    tmdl_wqstd <- odeqtmdl::tmdl_wqstd %>%
+    tmdl_ben_use <- odeqtmdl::tmdl_ben_use %>%
       dplyr::filter(!action_id %in% update_action_ids) %>%
-      rbind(tmdl_wqstd_update) %>%
+      rbind(tmdl_ben_use_update) %>%
       dplyr::distinct() %>%
-      dplyr::arrange(action_id, Pollu_ID, wqstd_code) %>%
+      dplyr::arrange(action_id, TMDL_wq_limited_parameter, ben_use_id) %>%
       as.data.frame()
 
     # Save a copy in data folder (replaces existing)
-    save(tmdl_wqstd, file = file.path(package_path, "data", "tmdl_wqstd.rda"))
+    save(tmdl_ben_use, file = file.path(package_path, "data", "tmdl_ben_use.rda"))
   }
 
   # UPDATE REACHES -------------------------------------------------------------
@@ -795,7 +795,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     # Save a copy in data folder (replaces existing)
     save(tmdl_au_gnis, file = file.path(package_path, "data", "tmdl_au_gnis.rda"))
 
-    #- tmdl_au --------------------------------------------------------------------
+    #- tmdl_au -----------------------------------------------------------------
 
     cat("-- tmdl_au\n")
 

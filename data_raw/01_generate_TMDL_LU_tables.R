@@ -1,7 +1,7 @@
 # This script generates the following data tables
 
-# LU_wqst
-# LU_wqst_code
+# LU_ben_use
+# LU_ben_use_id
 # LU_pollutant
 
 # It should be opened within the Project Rstudio view so the working directory is set correctly.
@@ -16,32 +16,31 @@ paths <- readxl::read_excel(path = "data_raw/project_paths.xlsx",
                             na = c("", "NA"),
                             col_types = c("text", "text"))
 
-#- LU_wqst ----------------------------------------------------------------
+#- LU_ben_use ----------------------------------------------------------------
 
-LU_wqstd <- readxl::read_excel(path = file.path(paths$package_path[1], "data_raw", "LU_wqstd_info.xlsx"),
-                               sheet = "Final", col_names = TRUE,
-                               col_types = c("text", "numeric", "numeric",
-                                             "text")) %>%
-  select(Pollu_ID, wqstd_code) %>%
+LU_ben_use <- readxl::read_excel(path = file.path(paths$package_path[1], "data_raw", "LU_ben_use.xlsx"),
+                               sheet = "Sheet1", col_names = TRUE,
+                               col_types = c("numeric", "text")) %>%
+  select(ben_use_id, ben_use) %>%
   distinct() %>%
-  arrange(Pollu_ID, wqstd_code) %>%
+  arrange(ben_use_id) %>%
   as.data.frame()
 
 # Save a copy in data folder (replaces existing)
-save(LU_wqstd, file = file.path(paths$package_path[1], "data", "LU_wqstd.rda"))
+save(LU_ben_use, file = file.path(paths$package_path[1], "data", "LU_ben_use.rda"))
 
-#- LU_wqst_code ----------------------------------------------------------------
+#- LU_ben_use_code ----------------------------------------------------------------
 
-LU_wqstd_code <- readxl::read_excel(path = file.path(paths$package_path[1], "data_raw", "LU_wqstd_code.xlsx"),
+LU_ben_use_code <- readxl::read_excel(path = file.path(paths$package_path[1], "data_raw", "LU_ben_use_code.xlsx"),
                                     sheet = "sheet1", col_names = TRUE,
-                                    col_types = c("numeric", "text")) %>%
-  select(wqstd_code, wqstd) %>%
+                                    col_types = c("numeric", "numeric", "text")) %>%
+  select(ben_use_code,	ben_use_id,	ben_use) %>%
   distinct() %>%
-  arrange(wqstd_code, wqstd) %>%
+  arrange(ben_use_code,	ben_use_id) %>%
   as.data.frame()
 
 # Save a copy in data folder (replaces existing)
-save(LU_wqstd_code, file = file.path(paths$package_path[1], "data", "LU_wqstd_code.rda"))
+save(LU_ben_use_code, file = file.path(paths$package_path[1], "data", "LU_ben_use_code.rda"))
 
 #- LU_pollutant ----------------------------------------------------------------
 
