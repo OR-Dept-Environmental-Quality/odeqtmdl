@@ -40,8 +40,6 @@ pastee <- function(x) {paste(sort(na.omit(unique(x))), collapse = "; ")}
 
 df1 <- tmdl_reaches %>%
   dplyr::filter(!AU_ID == "99") %>%
-  dplyr::left_join(odeqtmdl::tmdl_parameters[,c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant", "TMDL_status")],
-                   by = c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant")) %>%
   dplyr::filter(TMDL_status == "Active") %>%
   dplyr::left_join(odeqtmdl::tmdl_actions[,c("action_id", "TMDL_name", "citation_abbreviated")], by = "action_id") %>%
   dplyr::mutate(TMDL_name = paste0(TMDL_name," (",citation_abbreviated,")"),
@@ -51,7 +49,7 @@ df1 <- tmdl_reaches %>%
   group_by(GLOBALID, HUC_6, HU_6_NAME, HUC6_full, HUC_8, HU_8_NAME, HUC8_full) %>%
   summarize(action_ids = pastee(action_id),
             TMDL_names = pastee(TMDL_name),
-            TMDL_wq_limited_parameters = pastee(TMDL_wq_limited_parameter),
+            TMDL_parameters = pastee(TMDL_parameter),
             TMDL_pollutants = pastee(TMDL_pollutant),
             Scope_TMDL = pastee(Scope_TMDL),
             Scope_Allocation_only = pastee(Scope_Allocation_only),
@@ -68,15 +66,13 @@ df1 <- tmdl_reaches %>%
 # df1 <- tmdl_reaches %>%
 #   dplyr::filter(!AU_ID == "99") %>%
 #   dplyr::filter(TMDL_scope == "TMDL") %>%
-#   dplyr::left_join(odeqtmdl::tmdl_parameters[,c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant", "TMDL_status")],
-#                    by = c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant")) %>%
 #   dplyr::filter(TMDL_status == "Active") %>%
 #   dplyr::left_join(odeqtmdl::tmdl_actions[,c("action_id", "TMDL_name", "citation_abbreviated")], by = "action_id") %>%
 #   dplyr::mutate(TMDL_name = paste0(TMDL_name," (",citation_abbreviated,")")) %>%
 #   group_by(GLOBALID, HUC_6, HU_6_NAME, HUC6_full, HUC_8, HU_8_NAME, HUC8_full) %>%
 #   summarize(action_ids = pastee(action_id),
 #             TMDL_names = pastee(TMDL_name),
-#             TMDL_wq_limited_parameters = pastee(TMDL_wq_limited_parameter),
+#             TMDL_parameters = pastee(TMDL_parameter),
 #             TMDL_pollutants = pastee(TMDL_pollutant),
 #             TMDL_scope = pastee(TMDL_scope),
 #             TMDL_status = pastee(TMDL_status),
@@ -98,7 +94,7 @@ tmdls_by_reach <- nhd_fc %>%
   dplyr::inner_join(y = df1, by = "GLOBALID") %>%
   dplyr::select(action_ids,
                 TMDL_names,
-                TMDL_wq_limited_parameters,
+                TMDL_parameters,
                 any_of(c("TMDL_pollutants",
                          "TMDL_scope",
                          "Scope_TMDL",
@@ -141,15 +137,13 @@ gpkg_layer <- "TMDLs_by_AU"
 df3 <- odeqtmdl::tmdl_au %>%
   dplyr::filter(!AU_ID == "99") %>%
   dplyr::filter(TMDL_scope == "TMDL") %>%
-  dplyr::left_join(odeqtmdl::tmdl_parameters[,c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant", "TMDL_status")],
-                   by = c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant")) %>%
   dplyr::filter(TMDL_status == "Active") %>%
   dplyr::left_join(odeqtmdl::tmdl_actions[,c("action_id", "TMDL_name", "citation_abbreviated")], by = "action_id") %>%
   dplyr::mutate(TMDL_name = paste0(TMDL_name," (",citation_abbreviated,")")) %>%
   group_by(AU_ID, HUC_6, HU_6_NAME, HUC6_full, HUC_8, HU_8_NAME, HUC8_full) %>%
   summarize(action_ids = pastee(action_id),
             TMDL_names = pastee(TMDL_name),
-            TMDL_wq_limited_parameters = pastee(TMDL_wq_limited_parameter),
+            TMDL_parameters = pastee(TMDL_parameter),
             TMDL_pollutants = pastee(TMDL_pollutant),
             TMDL_scope = pastee(TMDL_scope),
             TMDL_status = pastee(TMDL_status))
@@ -158,7 +152,7 @@ tmdls_by_au <- tmdl_au_fc %>%
   dplyr::inner_join(y = df3, by = "AU_ID") %>%
   dplyr::select(action_ids,
                 TMDL_names,
-                TMDL_wq_limited_parameters,
+                TMDL_parameters,
                 TMDL_pollutants,
                 TMDL_scope,
                 TMDL_status,
@@ -270,12 +264,10 @@ param_names <- c(
 
 TMDL_params <- tmdl_reaches %>%
   filter(!AU_ID == "99") %>%
-  left_join(odeqtmdl::tmdl_parameters[,c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant", "TMDL_status")],
-            by = c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant")) %>%
   filter(TMDL_status == "Active") %>%
-  select(TMDL_wq_limited_parameter) %>%
+  select(TMDL_parameter) %>%
   distinct() %>%
-  pull(TMDL_wq_limited_parameter) %>% sort()
+  pull(TMDL_parameter) %>% sort()
 
 for (param in TMDL_params) {
 

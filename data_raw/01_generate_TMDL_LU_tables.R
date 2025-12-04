@@ -76,9 +76,9 @@ LU_action_type <- readxl::read_excel(path = file.path(paths$tmdl_reaches_shp[1],
   filter(TMDL_scope == "TMDL") %>%
   mutate(action_type = replace_na(action_type, "Protection Approach"),
          IR_year = replace_na(IR_year, IR_year_ref)) %>%
-  select(action_id, AU_ID, Pollu_ID, TMDL_wq_limited_parameter, action_type, IR_year, TMDL_scope) %>%
+  select(action_id, AU_ID, Pollu_ID, TMDL_parameter, action_type, IR_year, TMDL_scope) %>%
   distinct() %>%
-  arrange(action_id, AU_ID, TMDL_wq_limited_parameter, action_type) %>%
+  arrange(action_id, AU_ID, TMDL_parameter, action_type) %>%
   as.data.frame()
 
   # Save a copy in data folder (replaces existing)

@@ -33,7 +33,7 @@ tmdl_export_gpkg(
 
 \item{TMDL_pollu}{vector of TMDL pollutant parameter names used to filter the TMDLs. The output will include TMDLs that addressed that pollutant parameter. Default is NULL and all pollutants are included.}
 
-\item{collapse}{logical. If TRUE (the default), the values in action id, TMDL_name, TMDL_wq_limited_parameter, and TMDL_pollutant are collapsed (pasted together) into a string separated by a semi-colon if they share a common Permanent_Identifier, AU_ID, HUC_6, and HUC_8 value. Each field is collapsed separately.}
+\item{collapse}{logical. If TRUE (the default), the values in action id, TMDL_name, TMDL_parameter, and TMDL_pollutant are collapsed (pasted together) into a string separated by a semi-colon if they share a common Permanent_Identifier, AU_ID, HUC_6, and HUC_8 value. Each field is collapsed separately.}
 }
 \description{
 Export active TMDLs from the TMDL reach database to a GeoPackage (.gpkg). This allows the data to
@@ -52,7 +52,7 @@ Output GeoPackage fields include:
 \itemize{
   \item action_id:	EPA ATTAINS Action ID assigned to each TMDL document.
   \item TMDL_name:	Name of TMDL document and abbreviated citation of TMDL.
-  \item TMDL_wq_limited_parameters:	Name of the water quality limited 303(d) parameter that the TMDL addresses.
+  \item TMDL_parameters:	Name of the water quality limited 303(d) parameter that the TMDL addresses.
   \item TMDL_pollutant:	Name of TMDL pollutant causing the water quality impairment.
   \item TMDL_status: Status of TMDL for the parameter and pollutant.
   \itemize{
