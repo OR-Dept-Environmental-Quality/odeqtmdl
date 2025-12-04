@@ -78,13 +78,13 @@ tmdl_export_attains <- function(out_dir,
   # Filter both TMDL param and TMDL pollu
   if ((!is.null(TMDL_param) & !is.null(TMDL_pollu))) {
     df <- df %>%
-      dplyr::filter(TMDL_wq_limited_parameter %in% TMDL_param | TMDL_pollutant %in% TMDL_pollu)
+      dplyr::filter(TMDL_parameter %in% TMDL_param | TMDL_pollutant %in% TMDL_pollu)
   }
 
   # TMDL param only
   if ((!is.null(TMDL_param) & is.null(TMDL_pollu))) {
     df <- df %>%
-      dplyr::filter(TMDL_wq_limited_parameter %in% TMDL_param)
+      dplyr::filter(TMDL_parameter %in% TMDL_param)
   }
 
   # TMDL pollu only
@@ -161,7 +161,7 @@ tmdl_export_attains <- function(out_dir,
     dplyr::rename(ACTION_ID = action_id,
                   ASSESSMENT_UNIT_ID = AU_ID,
                   ASSOCIATED_POLLUTANT = Attains_Pollutant) %>%
-    dplyr::left_join(df_pollu, by = c("TMDL_wq_limited_parameter" = "Pollutant_DEQ")) %>%
+    dplyr::left_join(df_pollu, by = c("TMDL_parameter" = "Pollutant_DEQ")) %>%
     dplyr::rename(PARAMETER_NAME = Attains_Pollutant) %>%
     dplyr::select(ACTION_ID,
                   ASSESSMENT_UNIT_ID,

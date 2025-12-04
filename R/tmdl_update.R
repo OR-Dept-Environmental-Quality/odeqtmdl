@@ -152,7 +152,8 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     #                                                                      "Methylmercury") ~ "Not Active",
     #                         TRUE ~ TMDL_status),
 
-
+    # Note that the spreadsheet still contains status fields even though they have been moved to reach
+    # tables in database. This will be fixed with template update.
     tmdl_parameters_update <- readxl::read_excel(path = file.path(xlsx_template),
                                                  sheet = "tmdl_parameters",
                                                  na = c("", "NA"),
@@ -160,8 +161,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                                                  col_types = c("text", "text", "numeric", "text", "text",
                                                                "text", "text", "text")) %>%
       dplyr::filter(action_id %in% update_action_ids) %>%
-      dplyr::select(action_id, TMDL_wq_limited_parameter, TMDL_pollutant,
-                    TMDL_status, revision_action_id, TMDL_status_comment) %>%
+      dplyr::select(action_id, TMDL_parameter, TMDL_pollutant) %>%
       dplyr::distinct()
 
     # This updates the whole dataframe
@@ -169,7 +169,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       dplyr::filter(!action_id %in% update_action_ids) %>%
       rbind(tmdl_parameters_update) %>%
       dplyr::distinct() %>%
-      dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant) %>%
+      dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant) %>%
       as.data.frame()
 
     # Save a copy in data folder (replaces existing)
@@ -287,9 +287,9 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                                             col_types = c("text", "text", "numeric", "text", "text")) %>%
       dplyr::filter(action_id %in% update_action_ids) %>%
       dplyr::left_join(odeqtmdl::LU_pollutant[,c("Pollu_ID", "Pollutant_DEQ")],
-                       by = c("TMDL_wq_limited_parameter" = "Pollutant_DEQ")) %>%
-      dplyr::select(action_id, TMDL_wq_limited_parameter, Pollu_ID, ben_use_id,	ben_use) %>%
-      dplyr::arrange(action_id, TMDL_wq_limited_parameter, ben_use_id) %>%
+                       by = c("TMDL_parameter" = "Pollutant_DEQ")) %>%
+      dplyr::select(action_id, TMDL_parameter, Pollu_ID, ben_use_id,	ben_use) %>%
+      dplyr::arrange(action_id, TMDL_parameter, ben_use_id) %>%
       as.data.frame()
 
     # This updates the whole dataframe
@@ -297,7 +297,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       dplyr::filter(!action_id %in% update_action_ids) %>%
       rbind(tmdl_ben_use_update) %>%
       dplyr::distinct() %>%
-      dplyr::arrange(action_id, TMDL_wq_limited_parameter, ben_use_id) %>%
+      dplyr::arrange(action_id, TMDL_parameter, ben_use_id) %>%
       as.data.frame()
 
     # Save a copy in data folder (replaces existing)
@@ -404,7 +404,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
           {
             if ("GLOBALID" %in% names(.)) . else  dplyr::mutate(., GLOBALID = NA_character_)
           } %>%
-          dplyr::select(action_id, TMDL_wq_limited_parameter = TMDL_param,
+          dplyr::select(action_id, TMDL_parameter = TMDL_param,
                         TMDL_pollutant = TMDL_pollu, TMDL_scope, Period = period, Source,
                         geo_id, GLOBALID) %>%
           dplyr::filter(action_id %in% update_action_ids)
@@ -461,7 +461,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
           {
             if ("GLOBALID" %in% names(.)) . else  dplyr::mutate(., GLOBALID = NA_character_)
           } %>%
-          dplyr::select(action_id, TMDL_wq_limited_parameter = TMDL_param,
+          dplyr::select(action_id, TMDL_parameter = TMDL_param,
                         TMDL_pollutant = TMDL_pollu, geo_id, GLOBALID) %>%
           dplyr::filter(action_id %in% update_action_ids)
 
@@ -514,7 +514,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
           {
             if ("geo_id" %in% names(.)) . else  dplyr::mutate(., geo_id = NA_character_)
           } %>%
-          dplyr::select(AU_ID, action_id, TMDL_wq_limited_parameter = TMDL_param,
+          dplyr::select(AU_ID, action_id, TMDL_parameter = TMDL_param,
                         TMDL_pollutant = TMDL_pollu, TMDL_scope, Period = period, Source,
                         geo_id) %>%
           dplyr::filter(action_id %in% update_action_ids)
@@ -529,12 +529,12 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       tmdl_reach_tbl0 <- ornhd %>%
         dplyr::filter(!AU_ID == "99") %>%
         dplyr::inner_join(AU_flow_tbl, by = "AU_ID", relationship = "many-to-many") %>%
-        dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
+        dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
         dplyr::distinct() %>%
         dplyr::left_join(odeqtmdl::LU_pollutant[,c("Pollu_ID", "Pollutant_DEQ")],
-                         by = c("TMDL_wq_limited_parameter" = "Pollutant_DEQ")) %>%
+                         by = c("TMDL_parameter" = "Pollutant_DEQ")) %>%
         dplyr::select(action_id,
-                      TMDL_wq_limited_parameter,
+                      TMDL_parameter,
                       TMDL_pollutant,
                       TMDL_scope,
                       Period,
@@ -600,7 +600,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
           {
             if ("geo_id" %in% names(.)) . else  dplyr::mutate(., geo_id = NA_character_)
           } %>%
-          dplyr::select(AU_ID, action_id, TMDL_wq_limited_parameter = TMDL_param,
+          dplyr::select(AU_ID, action_id, TMDL_parameter = TMDL_param,
                         TMDL_pollutant = TMDL_pollu, TMDL_scope, Period = period, Source,
                         geo_id) %>%
           dplyr::filter(action_id %in% update_action_ids)
@@ -613,17 +613,17 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       # Some processing for joins
       AU_WB_update <- AU_WB_tbl %>%
         dplyr::filter(!AU_ID == "99") %>%
-        dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID) %>%
+        dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID) %>%
         dplyr::distinct() %>%
         dplyr::left_join(odeqtmdl::LU_pollutant[,c("Pollu_ID", "Pollutant_DEQ")],
-                         by = c("TMDL_wq_limited_parameter" = "Pollutant_DEQ")) %>%
+                         by = c("TMDL_parameter" = "Pollutant_DEQ")) %>%
         dplyr::inner_join(odeqmloctools::orau, by = "AU_ID") %>%
         dplyr::mutate(HUC6_full = paste0(HUC6," ", HUC6_Name),
                       HUC8_full = paste0(HUC8," ", HUC8_Name),
                       HUC10_full = paste0(HUC10," ", HUC10_Name),
                       LengthKM = 0.01) %>%
         dplyr::distinct() %>%
-        dplyr::select(action_id, TMDL_wq_limited_parameter, TMDL_pollutant,
+        dplyr::select(action_id, TMDL_parameter, TMDL_pollutant,
                       TMDL_scope, Period, Source, Pollu_ID,
                       HUC6, HUC6_Name, HUC6_full,
                       HUC8, HUC8_Name, HUC8_full,
@@ -642,7 +642,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     cat("-- tmdl_reaches\n")
 
     tmdl_reaches_update <- tmdl_reach_tbl %>%
-      dplyr::select(GLOBALID, action_id, TMDL_wq_limited_parameter,
+      dplyr::select(GLOBALID, action_id, TMDL_parameter,
                     TMDL_pollutant, TMDL_scope, Period, Source, geo_id) %>%
       dplyr::mutate(Source = dplyr::case_when(grepl("Nonpoint", Source, ignore.case = TRUE) ~ "Nonpoint source",
                                               grepl("Point", Source, ignore.case = TRUE) ~ "Point source",
@@ -650,12 +650,12 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                                               TRUE ~ NA_character_)) %>%
       dplyr::left_join(ornhd, by = "GLOBALID") %>%
       dplyr::filter(!AU_ID == "99") %>%
-      dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
+      dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
       dplyr::distinct() %>%
       dplyr::left_join(odeqtmdl::LU_pollutant[,c("Pollu_ID", "Pollutant_DEQ")],
-                       by = c("TMDL_wq_limited_parameter" = "Pollutant_DEQ")) %>%
+                       by = c("TMDL_parameter" = "Pollutant_DEQ")) %>%
       dplyr::select(action_id,
-                    TMDL_wq_limited_parameter,
+                    TMDL_parameter,
                     TMDL_pollutant,
                     TMDL_scope,
                     Period,
@@ -680,7 +680,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       dplyr::filter(!(action_id %in% update_action_ids)) %>%
       rbind(tmdl_reaches_update) %>%
       dplyr::distinct() %>%
-      dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
+      dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
       as.data.frame()
 
     # the number of RDS files that tmdl_reaches dataframe is separated into.
@@ -741,13 +741,13 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                                               TRUE ~ NA_character_)) %>%
       dplyr::ungroup() %>%
       dplyr::group_by(action_id, AU_ID, AU_GNIS, TMDL_pollutant) %>%
-      dplyr::mutate(Period = dplyr::case_when(TMDL_wq_limited_parameter %in% c("Temperature", "Dissolved Oxygen") &
+      dplyr::mutate(Period = dplyr::case_when(TMDL_parameter %in% c("Temperature", "Dissolved Oxygen") &
                                                 length(unique(na.omit(Period))) > 1 ~ paste0("Mixed (",paste0(sort(unique(na.omit(Period))), collapse = ", "),")"),
-                                              TMDL_wq_limited_parameter %in% c("Temperature", "Dissolved Oxygen") &
+                                              TMDL_parameter %in% c("Temperature", "Dissolved Oxygen") &
                                                 length(unique(na.omit(Period))) == 1 ~ paste0(sort(unique(na.omit(Period))), collapse = ", "),
                                               TRUE ~ NA_character_)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(action_id, TMDL_wq_limited_parameter, TMDL_pollutant,
+      dplyr::select(action_id, TMDL_parameter, TMDL_pollutant,
                     TMDL_scope, Period, Source, Pollu_ID,
                     HUC6, HUC6_Name, HUC6_full,
                     HUC8, HUC8_Name, HUC8_full,
@@ -772,7 +772,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                                                   TRUE ~ NA_character_),
                     TMDL_AU_GNIS_Percent = round(TMDL_length_km/AU_GNIS_length_km * 100,0),
                     Allocation_AU_GNIS_Percent = round((Allocation_only_km + Advisory_allocation_km)/AU_GNIS_length_km * 100,0)) %>%
-      dplyr::select(action_id, TMDL_wq_limited_parameter, TMDL_pollutant,
+      dplyr::select(action_id, TMDL_parameter, TMDL_pollutant,
                     TMDL_scope, Period, Source, Pollu_ID,
                     HUC6, HUC6_Name, HUC6_full,
                     HUC8, HUC8_Name, HUC8_full,
@@ -789,7 +789,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       dplyr::filter(!(action_id %in% update_action_ids)) %>%
       rbind(tmdl_au_gnis_update) %>%
       dplyr::distinct() %>%
-      dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID, AU_GNIS) %>%
+      dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, AU_GNIS) %>%
       as.data.frame()
 
     # Save a copy in data folder (replaces existing)
@@ -810,14 +810,14 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                                               all(c("Point source", NA_character_) %in% Source) ~ "Point source",
                                               TRUE ~ NA_character_)) %>%
       dplyr::ungroup() %>%
-      dplyr::group_by(action_id, AU_ID, TMDL_wq_limited_parameter) %>%
-      dplyr::mutate(Period = dplyr::case_when(TMDL_wq_limited_parameter %in% c("Temperature", "Dissolved Oxygen") &
+      dplyr::group_by(action_id, AU_ID, TMDL_parameter) %>%
+      dplyr::mutate(Period = dplyr::case_when(TMDL_parameter %in% c("Temperature", "Dissolved Oxygen") &
                                                 length(unique(na.omit(Period))) > 1 ~ paste0("Mixed (",paste0(sort(unique(na.omit(Period))), collapse = ", "),")"),
-                                              TMDL_wq_limited_parameter %in% c("Temperature", "Dissolved Oxygen") &
+                                              TMDL_parameter %in% c("Temperature", "Dissolved Oxygen") &
                                                 length(unique(na.omit(Period))) == 1 ~ paste0(sort(unique(na.omit(Period))), collapse = ", "),
                                               TRUE ~ NA_character_)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(action_id, TMDL_wq_limited_parameter, TMDL_pollutant,
+      dplyr::select(action_id, TMDL_parameter, TMDL_pollutant,
                     TMDL_scope, Period, Source, Pollu_ID,
                     HUC6, HUC6_Name, HUC6_full,
                     HUC8, HUC8_Name, HUC8_full,
@@ -844,7 +844,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                                                   TRUE ~ NA_character_),
                     TMDL_AU_Percent = round(TMDL_length_km/AU_length_km * 100,0),
                     Allocation_AU_Percent = round((Allocation_only_km + Advisory_allocation_km)/AU_length_km * 100,0)) %>%
-      dplyr::select(action_id, TMDL_wq_limited_parameter, TMDL_pollutant,
+      dplyr::select(action_id, TMDL_parameter, TMDL_pollutant,
                     TMDL_scope, Period, Source, Pollu_ID,
                     HUC6, HUC6_Name, HUC6_full,
                     HUC8, HUC8_Name, HUC8_full,
@@ -861,7 +861,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       dplyr::filter(!(action_id %in% update_action_ids)) %>%
       rbind(tmdl_au_update) %>%
       dplyr::distinct() %>%
-      dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID) %>%
+      dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID) %>%
       as.data.frame()
 
     # Save a copy in data folder (replaces existing)
@@ -871,16 +871,16 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
 
 
     # tmdl_geo_id_reaches_update <- geo_id_tbl %>%
-    #   dplyr::select(GLOBALID, action_id, TMDL_wq_limited_parameter,
+    #   dplyr::select(GLOBALID, action_id, TMDL_parameter,
     #                 TMDL_pollutant, geo_id) %>%
     #   dplyr::left_join(ornhd, by = "GLOBALID") %>%
     #   dplyr::filter(!AU_ID == "99") %>%
-    #   dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, geo_id, AU_ID, ReachCode) %>%
+    #   dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, geo_id, AU_ID, ReachCode) %>%
     #   dplyr::distinct() %>%
     #   dplyr::left_join(odeqtmdl::LU_pollutant[,c("Pollu_ID", "Pollutant_DEQ")],
-    #                    by = c("TMDL_wq_limited_parameter" = "Pollutant_DEQ")) %>%
+    #                    by = c("TMDL_parameter" = "Pollutant_DEQ")) %>%
     #   dplyr::select(action_id,
-    #                 TMDL_wq_limited_parameter,
+    #                 TMDL_parameter,
     #                 TMDL_pollutant,
     #                 Pollu_ID,
     #                 geo_id,
@@ -902,7 +902,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     #   dplyr::filter(!(action_id %in% update_action_ids)) %>%
     #   rbind(tmdl_reaches_update) %>%
     #   dplyr::distinct() %>%
-    #   dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
+    #   dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
     #   as.data.frame()
     #
     #

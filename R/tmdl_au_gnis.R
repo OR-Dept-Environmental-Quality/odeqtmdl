@@ -17,7 +17,7 @@
 #'
 #' \itemize{
 #'   \item action_id:	EPA ATTAINS Action ID assigned to each TMDL document.
-#'   \item TMDL_wq_limited_parameter:	Name of the water quality limited 303(d) parameter that the TMDL addresses.
+#'   \item TMDL_parameter:	Name of the water quality limited 303(d) parameter that the TMDL addresses.
 #'   \item TMDL_pollutant:	Name of TMDL pollutant causing the water quality impairment.
 #'   \item TMDL_scope: Provides information about how the TMDL applies.
 #'      \itemize{
@@ -47,7 +47,15 @@
 #'      \item Nonpoint source: Identifies assessment units where pollutant loading is from nonpoint sources only.
 #'      \item Both: Identifies assessment units where pollutant loading is from point sources and nonpoint sources.
 #'      }
-#'   \item Pollu_ID: DEQ water quality parameter ID. ID is for the parameter in 'TMDL_wq_limited_parameter'.
+#'   \item TMDL_status: Status of TMDL for the parameter and pollutant.
+#'   \itemize{
+#'        \item Active: TMDL has been approved by EPA and is active.
+#'        \item Not Active: TMDL has been withdrawn, disapproved by EPA, and/or replaced with a newer TMDL.
+#'        \item In Development: TMDL is in development.
+#'        }
+#'   \item TMDL_status_comment: Note summarizing information about the TMDL and if it was revised or modified.
+#'   \item revision_action_id: The EPA ATTAINS action ID assigned to the TMDL revision.
+#'   \item Pollu_ID: DEQ water quality parameter ID. ID is for the parameter in 'TMDL_parameter'.
 #'   \item HUC6: Basin six digit USGS hydrological unit code
 #'   \item HUC6_Name: USGS Basin name.
 #'   \item HUC6_full: Concatenation of the HUC_6 and HU_6_NAME fields.

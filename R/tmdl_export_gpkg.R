@@ -15,7 +15,7 @@
 #' \itemize{
 #'   \item action_id:	EPA ATTAINS Action ID assigned to each TMDL document.
 #'   \item TMDL_name:	Name of TMDL document and abbreviated citation of TMDL.
-#'   \item TMDL_wq_limited_parameters:	Name of the water quality limited 303(d) parameter that the TMDL addresses.
+#'   \item TMDL_parameters:	Name of the water quality limited 303(d) parameter that the TMDL addresses.
 #'   \item TMDL_pollutant:	Name of TMDL pollutant causing the water quality impairment.
 #'   \item TMDL_status: Status of TMDL for the parameter and pollutant.
 #'   \itemize{
@@ -77,7 +77,7 @@
 #' @param action_ids vector of TMDL action IDs used to filter the TMDLs. Default is NULL and all TMDLs are included.
 #' @param TMDL_param vector of water quality  parameter names used to filter the TMDLs. The output will include TMDLs that addressed that water quality parameter. Default is NULL and all parameters are included.
 #' @param TMDL_pollu vector of TMDL pollutant parameter names used to filter the TMDLs. The output will include TMDLs that addressed that pollutant parameter. Default is NULL and all pollutants are included.
-#' @param collapse logical. If TRUE (the default), the values in action id, TMDL_name, TMDL_wq_limited_parameter, and TMDL_pollutant are collapsed (pasted together) into a string separated by a semi-colon if they share a common Permanent_Identifier, AU_ID, HUC_6, and HUC_8 value. Each field is collapsed separately.
+#' @param collapse logical. If TRUE (the default), the values in action id, TMDL_name, TMDL_parameter, and TMDL_pollutant are collapsed (pasted together) into a string separated by a semi-colon if they share a common Permanent_Identifier, AU_ID, HUC_6, and HUC_8 value. Each field is collapsed separately.
 #'
 #' @export
 #' @keywords Oregon TMDL reach database
@@ -88,8 +88,6 @@ tmdl_export_gpkg <- function(gpkg_dsn, gpkg_layer, tmdl_reaches, tmdl_actions = 
 
 
   df <- tmdl_reaches %>%
-    dplyr::left_join(odeqtmdl::tmdl_parameters[,c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant", "TMDL_status")],
-                     by = c("action_id", "TMDL_wq_limited_parameter", "TMDL_pollutant")) %>%
     dplyr::filter(TMDL_status == "Active")
 
   if (is.null(tmdl_actions)) {
@@ -105,13 +103,13 @@ tmdl_export_gpkg <- function(gpkg_dsn, gpkg_layer, tmdl_reaches, tmdl_actions = 
   # Filter both TMDL param and TMDL pollu
   if ((!is.null(TMDL_param) & !is.null(TMDL_pollu))) {
     df <- df %>%
-      dplyr::filter(TMDL_wq_limited_parameter %in% TMDL_param | TMDL_pollutant %in% TMDL_pollu)
+      dplyr::filter(TMDL_parameter %in% TMDL_param | TMDL_pollutant %in% TMDL_pollu)
     }
 
   # TMDL param only
   if ((!is.null(TMDL_param) & is.null(TMDL_pollu))) {
     df <- df %>%
-      dplyr::filter(TMDL_wq_limited_parameter %in% TMDL_param)
+      dplyr::filter(TMDL_parameter %in% TMDL_param)
   }
 
   # TMDL pollu only
@@ -128,7 +126,7 @@ tmdl_export_gpkg <- function(gpkg_dsn, gpkg_layer, tmdl_reaches, tmdl_actions = 
       group_by(GLOBALID, HUC_6, HU_6_NAME, HUC6_full, HUC_8, HU_8_NAME, HUC8_full, TMDL_status) %>%
       summarize(action_id = paste((unique(action_id)), collapse = "; "),
                 TMDL_name = paste((unique(TMDL_name)), collapse = "; "),
-                TMDL_wq_limited_parameter = paste(sort(unique(TMDL_wq_limited_parameter)), collapse = "; "),
+                TMDL_parameter = paste(sort(unique(TMDL_parameter)), collapse = "; "),
                 TMDL_pollutant = paste(sort(unique(TMDL_pollutant)), collapse = "; "),
                 TMDL_scope = paste(sort(unique(TMDL_scope)), collapse = "; "),
                 Period = paste(sort(unique(Period)), collapse = "; "),
@@ -150,7 +148,7 @@ tmdl_export_gpkg <- function(gpkg_dsn, gpkg_layer, tmdl_reaches, tmdl_actions = 
       dplyr::inner_join(y = df, by = "GLOBALID") %>%
       dplyr::select(action_id,
                     TMDL_name,
-                    TMDL_wq_limited_parameter,
+                    TMDL_parameter,
                     TMDL_pollutant,
                     TMDL_status,
                     TMDL_scope,
@@ -199,7 +197,7 @@ tmdl_export_gpkg <- function(gpkg_dsn, gpkg_layer, tmdl_reaches, tmdl_actions = 
       dplyr::inner_join(y = df, by = "GLOBALID") %>%
       dplyr::select(action_id,
                     TMDL_name,
-                    TMDL_wq_limited_parameter,
+                    TMDL_parameter,
                     TMDL_pollutant,
                     TMDL_status,
                     TMDL_scope,

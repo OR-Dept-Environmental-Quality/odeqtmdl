@@ -106,7 +106,7 @@ tmdl_remove <- function(action_ids = NULL, package_path) {
   tmdl_ben_use <- odeqtmdl::tmdl_ben_use %>%
     dplyr::filter(!action_id %in% remove_action_ids) %>%
     dplyr::distinct() %>%
-    dplyr::arrange(action_id, TMDL_wq_limited_parameter, ben_use_id) %>%
+    dplyr::arrange(action_id, TMDL_parameter, ben_use_id) %>%
     as.data.frame()
 
   # Save a copy in data folder (replaces existing)
@@ -119,7 +119,7 @@ tmdl_remove <- function(action_ids = NULL, package_path) {
   tmdl_reaches <- odeqtmdl::tmdl_reaches() %>%
     dplyr::filter(!(action_id %in% remove_action_ids)) %>%
     dplyr::distinct() %>%
-    dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
+    dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
     as.data.frame()
 
   num_df <- 6
@@ -161,7 +161,7 @@ tmdl_remove <- function(action_ids = NULL, package_path) {
   tmdl_au_gnis <- odeqtmdl::tmdl_au_gnis %>%
     dplyr::filter(!(action_id %in% remove_action_ids)) %>%
     dplyr::distinct() %>%
-    dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID, AU_GNIS) %>%
+    dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, AU_GNIS) %>%
     as.data.frame()
 
   # Save a copy in data folder (replaces existing)
@@ -174,7 +174,7 @@ tmdl_remove <- function(action_ids = NULL, package_path) {
   tmdl_au <- odeqtmdl::tmdl_au %>%
     dplyr::filter(!(action_id %in% remove_action_ids)) %>%
     dplyr::distinct() %>%
-    dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant, AU_ID) %>%
+    dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID) %>%
     as.data.frame()
 
   # Save a copy in data folder (replaces existing)
@@ -187,7 +187,7 @@ tmdl_remove <- function(action_ids = NULL, package_path) {
   tmdl_parameters <- odeqtmdl::tmdl_parameters %>%
     dplyr::filter(!action_id %in% remove_action_ids) %>%
     dplyr::distinct() %>%
-    dplyr::arrange(action_id, TMDL_wq_limited_parameter, TMDL_pollutant) %>%
+    dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant) %>%
     as.data.frame()
 
   # Save a copy in data folder (replaces existing)
