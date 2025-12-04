@@ -1,148 +1,164 @@
+// https://dbdiagram.io/d/TMDL_db_structure_2025-11-22-6926acaea0c4ebcc2bc2d6f3
+
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
 
-// https://dbdiagram.io/d/TMDL_db_structure-650fb148ffbf5169f0600bc7
-
 Table tmdl_actions {
-action_id  text [primary key]
-TMDL_name  text
-TMDL_issue_year text
-issue_agency  text
-in_attains  logical
-attains_status  text
-TMDL_issue_date  date
-EPA_action_date  date
-citation_abbreviated  text
-citation_full  text
-TMDL_comment text
-URL text
-}
-
-Table tmdl_parameters {
-action_id text
-TMDL_wq_limited_parameter text
-TMDL_pollutant text
-TMDL_status text
-TMDL_status_comment text
-revision_action_id text
-TMDL_mapped logical
+  action_id  text [primary key]
+  TMDL_name  text
+  TMDL_issue_year text
+  issue_agency  text
+  in_attains  logical
+  attains_status  text
+  TMDL_issue_date  date
+  EPA_action_date  date
+  citation_abbreviated  text
+  citation_full  text
+  TMDL_comment text
+  URL text
 }
 
 Table tmdl_geo_ids {
   action_id text
-  geo_id text
+  geo_id text [primary key]
   geo_description text
   geo_id_mapped logical
 }
 
 Table tmdl_targets {
-action_id text
-geo_id text
-TMDL_pollutant text
-field_parameter text
-target_type text
-target_value text
-target_units text
-Unit_UID numeric
-target_time_base text
-time_base_UID numeric
-target_stat_base text
-stat_base_UID numeric
-season_start text
-season_end text
-target_conditionals text
-TMDL_element text
-target_reference text
-target_comments text
+  action_id text 
+  geo_id text
+  TMDL_pollutant text
+  field_parameter text
+  target_type text
+  target_value text
+  target_units text
+  Unit_UID numeric
+  target_time_base text
+  time_base_UID numeric
+  target_stat_base text
+  stat_base_UID numeric
+  season_start text
+  season_end text 
+  target_conditionals text
+  TMDL_element text
+  target_reference text
+  target_comments text
+}
+
+Table tmdl_wla {
+  action_id text
+  AU_ID text
+  TMDL_pollutant text
+  EPANum text
+  WQFileNum text
+  facility_name text
 }
 
 Table tmdl_reaches {
-action_id text
-TMDL_wq_limited_parameter text
-TMDL_pollutant text
-TMDL_scope text
-Period text
-Source text
-geo_id text
-Pollu_ID numeric
-HUC6 text
-HU_6_Name text
-HUC6_full text
-HUC8 text
-HU8_Name text
-HUC8_full text
-HUC10 text
-HU10_Name text
-HUC10_full text
-GLOBALID text
-Permanent_Identifier text
-ReachCode text
-GNIS_Name text
-GNIS_ID integer
-AU_ID text
-AU_Name text
-AU_Description text
-AU_GNIS_Name text
-AU_GNIS text
-LengthKM numeric
+  action_id text
+  TMDL_parameter text
+  TMDL_pollutant text
+  TMDL_scope text
+  Period text
+  Source text
+  TMDL_status text
+  revision_action_id text
+  TMDL_status_comment text
+  geo_id text
+  Pollu_ID numeric
+  HUC6 text
+  HU_6_Name text
+  HUC6_full text
+  HUC8 text
+  HU8_Name text
+  HUC8_full text
+  HUC10 text
+  HU10_Name text
+  HUC10_full text
+  GLOBALID text
+  Permanent_Identifier text
+  ReachCode text
+  GNIS_Name text
+  GNIS_ID integer
+  AU_ID text
+  AU_Name text
+  AU_Description text
+  AU_GNIS_Name text
+  AU_GNIS text
+  LengthKM numeric
 }
 
 Table tmdl_au {
-action_id text
-TMDL_wq_limited_parameter text
-TMDL_pollutant text
-TMDL_scope text
-Period text
-Source text
-Pollu_ID numeric
-HUC6 text
-HUC6_Name text
-HUC6_full text
-HUC8 text
-HUC8_Name text
-HUC8_full text
-HUC10 text
-HU10_Name text
-HUC10_full text
-AU_ID text
-AU_Name text
-AU_Description text
-TMDL_length_km numeric
-AU_length_km numeric
-TMDL_AU_Percent numeric
+  action_id text
+  TMDL_parameter text
+  TMDL_pollutant text
+  TMDL_scope text
+  Period text
+  Source text
+  TMDL_status text
+  revision_action_id text
+  TMDL_status_comment text
+  Pollu_ID numeric
+  HUC6 text
+  HUC6_Name text
+  HUC6_full text
+  HUC8 text
+  HUC8_Name text
+  HUC8_full text
+  HUC10 text
+  HU10_Name text
+  HUC10_full text
+  AU_ID text
+  AU_Name text
+  AU_Description text
+  TMDL_length_km numeric
+  AU_length_km numeric
+  TMDL_AU_Percent numeric
 }
 
 Table tmdl_au_gnis {
-action_id text
-TMDL_wq_limited_parameter text
-TMDL_pollutant text
-TMDL_scope text
-Period text
-Source text
-Pollu_ID numeric
-HUC6 text
-HUC6_Name text
-HUC6_full text
-HUC8 text
-HUC8_Name text
-HUC8_full text
-HUC10 text
-HU10_Name text
-HUC10_full text
-AU_ID text
-AU_Name text
-AU_GNIS_Name text
-AU_GNIS text
-AU_Description text
-TMDL_length_km numeric
-AU_GNIS_length_km numeric
-TMDL_AU_GNIS_Percent numeric
+  action_id text
+  TMDL_parameter text
+  TMDL_pollutant text
+  TMDL_scope text
+  Period text
+  Source text
+  TMDL_status text
+  revision_action_id text
+  TMDL_status_comment text
+  Pollu_ID numeric
+  HUC6 text
+  HUC6_Name text
+  HUC6_full text
+  HUC8 text
+  HUC8_Name text
+  HUC8_full text
+  HUC10 text
+  HU10_Name text
+  HUC10_full text
+  AU_ID text
+  AU_Name text
+  AU_GNIS_Name text
+  AU_GNIS text
+  AU_Description text
+  TMDL_length_km numeric
+  AU_GNIS_length_km numeric
+  TMDL_AU_GNIS_Percent numeric
 }
 
-Table tmdl_wqstd {
+Table tmdl_ben_use {
   action_id text
+  TMDL_parameter text
   Pollu_ID numeric
-  wqstd_code numeric
+  ben_use_id numeric
+  ben_use text
+}
+
+Table tmdl_parameters {
+  action_id text
+  TMDL_parameter text
+  TMDL_pollutant text 
 }
 
 Table LU_pollutant {
@@ -155,34 +171,55 @@ Table LU_pollutant {
   Attains_Group text
 }
 
-Table LU_wqstd_code {
-wqstd_code numeric
-wqstd text
+Table LU_ben_use {
+  ben_use_id numeric
+  ben_use text
 }
 
-Table LU_wqstd {
-Pollu_ID numeric
-wqstd_code numeric
+Table LU_ben_use_code {
+  ben_use_code numeric
+  ben_use_id numeric
+  ben_use text
 }
 
-Ref: "tmdl_geo_ids"."geo_id" < "tmdl_targets"."geo_id"
+// future
+Table LU_reaches {
+  GLOBALID text
+  Permanent_Identifier text
+  ReachCode text
+  GNIS_Name text
+  GNIS_ID integer
+  AU_ID text
+  AU_Name text
+  AU_Description text
+  AU_GNIS_Name text
+  AU_GNIS text
+  LengthKM numeric
+  HUC6 text
+  HU_6_Name text
+  HUC6_full text
+  HUC8 text
+  HU8_Name text
+  HUC8_full text
+  HUC10 text
+  HU10_Name text
+  HUC10_full text
+}
 
-Ref: "tmdl_geo_ids"."action_id" < "tmdl_targets"."action_id"
-
-Ref: "tmdl_geo_ids"."geo_id" < "tmdl_reaches"."geo_id"
+Ref: "tmdl_actions"."action_id" < "tmdl_targets"."action_id"
 
 Ref: "tmdl_actions"."action_id" < "tmdl_reaches"."action_id"
 
 Ref: "tmdl_actions"."action_id" < "tmdl_au"."action_id"
 
-Ref: "tmdl_parameters"."action_id" < "tmdl_reaches"."action_id"
-
-Ref: "tmdl_parameters"."TMDL_wq_limited_parameter" < "tmdl_reaches"."TMDL_wq_limited_parameter"
-
-Ref: "tmdl_parameters"."TMDL_pollutant" < "tmdl_reaches"."TMDL_pollutant"
-
 Ref: "tmdl_actions"."action_id" < "tmdl_au_gnis"."action_id"
 
-Ref: "tmdl_wqstd"."Pollu_ID" < "tmdl_reaches"."Pollu_ID"
+Ref: "tmdl_actions"."action_id" < "tmdl_ben_use"."action_id"
 
-Ref: "tmdl_wqstd"."action_id" < "tmdl_reaches"."action_id"
+Ref: "tmdl_actions"."action_id" < "tmdl_wla"."action_id"
+
+Ref: "tmdl_actions"."action_id" < "tmdl_parameters"."action_id"
+
+Ref: "tmdl_geo_ids"."geo_id" < "tmdl_targets"."geo_id"
+
+Ref: "tmdl_geo_ids"."geo_id" < "tmdl_reaches"."geo_id"
