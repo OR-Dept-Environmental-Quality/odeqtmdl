@@ -1,6 +1,6 @@
 #' Beneficial uses being addressed by the TMDL
 #'
-#' Look up water quality standard codes by pollutant parameter ID. This information is used to determine which water quality standard was addressed by the TMDL.
+#' Look up the beneficial uses by pollutant parameter ID and TMDL.
 #'
 #' Data fields include:
 #' \itemize{
