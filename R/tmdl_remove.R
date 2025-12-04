@@ -9,7 +9,7 @@
 #'      \item tmdl_actions
 #'      \item tmdl_targets
 #'      \item tmdl_geo_id
-#'      \item tmdl_wqstd
+#'      \item tmdl_ben_use
 #'      \item tmdl_reaches
 #'      \item tmdl_au
 #'      \item tmdl_au_gnis
@@ -99,18 +99,18 @@ tmdl_remove <- function(action_ids = NULL, package_path) {
   # Save a copy in data folder (replaces existing)
   save(tmdl_wla, file = file.path(package_path, "data", "tmdl_wla.rda"))
 
-  #- tmdl_wqstd ----------------------------------------------------------------
+  #- tmdl_ben_use --------------------------------------------------------------
 
-  cat("-- tmdl_wqstd\n")
+  cat("-- tmdl_ben_use\n")
 
-  tmdl_wqstd <- odeqtmdl::tmdl_wqstd %>%
+  tmdl_ben_use <- odeqtmdl::tmdl_ben_use %>%
     dplyr::filter(!action_id %in% remove_action_ids) %>%
     dplyr::distinct() %>%
-    dplyr::arrange(action_id, Pollu_ID, wqstd_code) %>%
+    dplyr::arrange(action_id, TMDL_wq_limited_parameter, ben_use_id) %>%
     as.data.frame()
 
   # Save a copy in data folder (replaces existing)
-  save(tmdl_wqstd, file = file.path(package_path, "data", "tmdl_wqstd.rda"))
+  save(tmdl_ben_use, file = file.path(package_path, "data", "tmdl_ben_use.rda"))
 
   #- tmdl_reaches ------------------------------------------------------------
 

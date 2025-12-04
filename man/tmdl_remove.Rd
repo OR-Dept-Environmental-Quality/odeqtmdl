@@ -21,7 +21,7 @@ to update or add new information. Removes rows from the following package tables
      \item tmdl_actions
      \item tmdl_targets
      \item tmdl_geo_id
-     \item tmdl_wqstd
+     \item tmdl_ben_use
      \item tmdl_reaches
      \item tmdl_au
      \item tmdl_au_gnis

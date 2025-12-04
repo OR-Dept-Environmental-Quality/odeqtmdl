@@ -37,7 +37,7 @@ must be ESRI shapefiles and named in the following way:
   \item tmdl_parameters
   \item tmdl_geo_id
   \item tmdl_targets
-  \item tmdl_wqstd
+  \item tmdl_ben_use
   }}
 
 \item{update_reaches}{logical. if TRUE, imports GIS files and updates the following package tables:
