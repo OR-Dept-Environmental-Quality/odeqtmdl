@@ -152,8 +152,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     #                                                                      "Methylmercury") ~ "Not Active",
     #                         TRUE ~ TMDL_status),
 
-    # Note that the spreadsheet still contains status fields even though they have been moved to reach
-    # tables in database. This will be fixed with template update.
+    # Note the status columns are still in the xlsx sheet but they are not imporated to database
     tmdl_parameters_update <- readxl::read_excel(path = file.path(xlsx_template),
                                                  sheet = "tmdl_parameters",
                                                  na = c("", "NA"),
@@ -181,9 +180,8 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     tmdl_geo_ids_update <- readxl::read_excel(file.path(xlsx_template),
                                               sheet = "tmdl_geo_ids",
                                               col_names = TRUE, skip = 1,
-                                              col_types = c("text", "text", "logical",
-                                                            "text", "text", "numeric"
-                                              )) %>%
+                                              col_types = c("text", "text", "logical", "text",
+                                                            "text", "numeric")) %>%
       dplyr::filter(action_id %in% update_action_ids) %>%
       dplyr::select(action_id, geo_id, geo_description, geo_id_mapped) %>%
       dplyr::arrange(action_id, geo_id) %>%
@@ -284,7 +282,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     tmdl_ben_use_update <- readxl::read_excel(path = file.path(xlsx_template),
                                             sheet = "tmdl_ben_use",
                                             col_names = TRUE, skip = 1,
-                                            col_types = c("text", "text", "numeric", "text", "text")) %>%
+                                            col_types = c("text", "text", "numeric", "text", "numeric", "text")) %>%
       dplyr::filter(action_id %in% update_action_ids) %>%
       dplyr::left_join(odeqtmdl::LU_pollutant[,c("Pollu_ID", "Pollutant_DEQ")],
                        by = c("TMDL_parameter" = "Pollutant_DEQ")) %>%
@@ -602,7 +600,10 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
           } %>%
           dplyr::select(AU_ID, action_id, TMDL_parameter = TMDL_param,
                         TMDL_pollutant = TMDL_pollu, TMDL_scope, Period = period, Source,
-                        geo_id) %>%
+                        geo_id,
+                        TMDL_status = TMDL_stat,
+                        TMDL_status_comment = TMDL_stat_cmt,
+                        revision_action_id = rv_action_id) %>%
           dplyr::filter(action_id %in% update_action_ids)
 
         AU_WB_tbl <- rbind(AU_WB_tbl, AU_WB_tbl0)
@@ -757,28 +758,24 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       tidyr::pivot_wider(names_from = "TMDL_scope", values_from = "LengthKM",
                          values_fn = sum, values_fill = 0) %>%
       dplyr::bind_rows(dplyr::tibble(TMDL = numeric(),
-                                     "Allocation only" = numeric(),
-                                     "Advisory allocation" = numeric())) %>%
+                                     "Allocation only" = numeric())) %>%
       dplyr::rename(TMDL_length_km = TMDL,
-                    Allocation_only_km = "Allocation only",
-                    Advisory_allocation_km = "Advisory allocation") %>%
+                    Allocation_only_km = "Allocation only") %>%
       dplyr::mutate(TMDL_length_km = tidyr::replace_na(TMDL_length_km, 0),
-                    Allocation_only_km = tidyr::replace_na(Allocation_only_km, 0),
-                    Advisory_allocation_km = tidyr::replace_na(Advisory_allocation_km, 0)) %>%
+                    Allocation_only_km = tidyr::replace_na(Allocation_only_km, 0)) %>%
       dplyr::left_join(or_au_gnis, by = c("AU_ID", "AU_GNIS")) %>%
       dplyr::mutate(TMDL_scope = dplyr::case_when(TMDL_length_km > 0 ~ "TMDL",
                                                   Allocation_only_km > 0 ~ "Allocation only",
-                                                  Advisory_allocation_km > 0 ~ "Advisory allocation",
                                                   TRUE ~ NA_character_),
                     TMDL_AU_GNIS_Percent = round(TMDL_length_km/AU_GNIS_length_km * 100,0),
-                    Allocation_AU_GNIS_Percent = round((Allocation_only_km + Advisory_allocation_km)/AU_GNIS_length_km * 100,0)) %>%
+                    Allocation_AU_GNIS_Percent = round(Allocation_only_km/AU_GNIS_length_km * 100,0)) %>%
       dplyr::select(action_id, TMDL_parameter, TMDL_pollutant,
                     TMDL_scope, Period, Source, Pollu_ID,
                     HUC6, HUC6_Name, HUC6_full,
                     HUC8, HUC8_Name, HUC8_full,
                     HUC10, HUC10_Name, HUC10_full,
                     AU_ID, AU_Name, AU_GNIS_Name, AU_GNIS,
-                    TMDL_length_km, Allocation_only_km, Advisory_allocation_km,
+                    TMDL_length_km, Allocation_only_km,
                     AU_GNIS_length_km,
                     TMDL_AU_GNIS_Percent, Allocation_AU_GNIS_Percent) %>%
       as.data.frame()
@@ -829,28 +826,24 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       tidyr::pivot_wider(names_from = "TMDL_scope", values_from = "LengthKM",
                          values_fn = sum, values_fill = 0) %>%
       dplyr::bind_rows(dplyr::tibble(TMDL = numeric(),
-                                     "Allocation only" = numeric(),
-                                     "Advisory allocation" = numeric())) %>%
+                                     "Allocation only" = numeric())) %>%
       dplyr::rename(TMDL_length_km = TMDL,
-                    Allocation_only_km = "Allocation only",
-                    Advisory_allocation_km = "Advisory allocation") %>%
+                    Allocation_only_km = "Allocation only") %>%
       dplyr::mutate(TMDL_length_km = tidyr::replace_na(TMDL_length_km, 0),
-                    Allocation_only_km = tidyr::replace_na(Allocation_only_km, 0),
-                    Advisory_allocation_km = tidyr::replace_na(Advisory_allocation_km, 0)) %>%
+                    Allocation_only_km = tidyr::replace_na(Allocation_only_km, 0)) %>%
       dplyr::left_join(or_au, by = "AU_ID") %>%
       dplyr::mutate(TMDL_scope = dplyr::case_when(TMDL_length_km > 0 ~ "TMDL",
                                                   Allocation_only_km > 0 ~ "Allocation only",
-                                                  Advisory_allocation_km > 0 ~ "Advisory allocation",
                                                   TRUE ~ NA_character_),
                     TMDL_AU_Percent = round(TMDL_length_km/AU_length_km * 100,0),
-                    Allocation_AU_Percent = round((Allocation_only_km + Advisory_allocation_km)/AU_length_km * 100,0)) %>%
+                    Allocation_AU_Percent = round(Allocation_only_km/AU_length_km * 100,0)) %>%
       dplyr::select(action_id, TMDL_parameter, TMDL_pollutant,
                     TMDL_scope, Period, Source, Pollu_ID,
                     HUC6, HUC6_Name, HUC6_full,
                     HUC8, HUC8_Name, HUC8_full,
                     HUC10, HUC10_Name, HUC10_full,
                     AU_ID, AU_Name, AU_Description,
-                    TMDL_length_km, Allocation_only_km, Advisory_allocation_km,
+                    TMDL_length_km, Allocation_only_km,
                     AU_length_km,
                     TMDL_AU_Percent, Allocation_AU_Percent) %>%
       as.data.frame()
