@@ -204,7 +204,7 @@ tmdl_export_attains <- function(out_dir,
 
   # - README ---------------------------------------------------------------
 
-  readme_txt <- c(paste0("ATTAINS batch upload csv files were generated using the odeqtmdl R package version ", packageVersion('odeqtmdl'),"."),
+  readme_txt <- c(paste0("ATTAINS batch upload csv files were generated using the odeqtmdl R package version ", packageDescription(pkg = "odeqtmdl")[["Version"]],"."),
                   "",
                   paste0("Export on ", Sys.time())
                   )
