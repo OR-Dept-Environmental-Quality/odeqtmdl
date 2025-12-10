@@ -64,7 +64,6 @@ Table tmdl_reaches {
   Source text
   TMDL_status text
   revision_action_id text
-  TMDL_status_comment text
   geo_id text
   Pollu_ID numeric
   HUC6 text
@@ -98,7 +97,6 @@ Table tmdl_au {
   Source text
   TMDL_status text
   revision_action_id text
-  TMDL_status_comment text
   Pollu_ID numeric
   HUC6 text
   HUC6_Name text
@@ -113,8 +111,10 @@ Table tmdl_au {
   AU_Name text
   AU_Description text
   TMDL_length_km numeric
+  Allocation_only_km numeric
   AU_length_km numeric
   TMDL_AU_Percent numeric
+  Allocation_AU_Percent numeric
 }
 
 Table tmdl_au_gnis {
@@ -126,7 +126,6 @@ Table tmdl_au_gnis {
   Source text
   TMDL_status text
   revision_action_id text
-  TMDL_status_comment text
   Pollu_ID numeric
   HUC6 text
   HUC6_Name text
@@ -141,10 +140,11 @@ Table tmdl_au_gnis {
   AU_Name text
   AU_GNIS_Name text
   AU_GNIS text
-  AU_Description text
   TMDL_length_km numeric
+  Allocation_only_km numeric
   AU_GNIS_length_km numeric
   TMDL_AU_GNIS_Percent numeric
+  Allocation_AU_GNIS_Percent numeric
 }
 
 Table tmdl_ben_use {
