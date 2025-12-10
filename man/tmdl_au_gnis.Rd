@@ -5,7 +5,7 @@
 \alias{tmdl_au_gnis}
 \title{Oregon TMDL database of watershed assessment unit and GNIS name}
 \format{
-An object of class \code{data.frame} with 80959 rows and 29 columns.
+An object of class \code{data.frame} with 81608 rows and 27 columns.
 }
 \usage{
 data(tmdl_au_gnis)
@@ -65,7 +65,6 @@ NHD values are derived from NHDH_OR_931v220, which is the current version used f
        \item Not Active: TMDL has been withdrawn, disapproved by EPA, and/or replaced with a newer TMDL.
        \item In Development: TMDL is in development.
        }
-  \item TMDL_status_comment: Note summarizing information about the TMDL and if it was revised or modified.
   \item revision_action_id: The EPA ATTAINS action ID assigned to the TMDL revision.
   \item Pollu_ID: DEQ water quality parameter ID. ID is for the parameter in 'TMDL_parameter'.
   \item HUC6: Basin six digit USGS hydrological unit code
@@ -83,8 +82,6 @@ NHD values are derived from NHDH_OR_931v220, which is the current version used f
   \item AU_GNIS: Same as GNIS name but with a few additional names not in NHD.
   \item TMDL_length_km: Length of the assessment unit in kilometers where TMDL_scope = 'TMDL'. Length is calculated using the linear flowline feature in Albers Equal Area projection.
   \item Allocation_only_km: Length of the GNIS assessment unit in kilometers where TMDL_scope = 'Allocation only'.
-  \item Advisory_allocation_km: Length of the GNIS assessment unit in kilometers where TMDL_scope = 'Advisory allocation'.
-  \item AU_length_km: Length of the entire assessment unit in kilometers. Length is calculated using the linear flowline feature in Albers Equal Area projection.
   \item AU_GNIS_length_km: Length of the GNIS assessment unit in kilometers. Length is calculated using the linear flowline feature in Albers Equal Area projection.
   \item TMDL_AU_GNIS_Percent: Percent of the GNIS assessment unit where a TMDL has been developed to address a 303(d) listing or future listing.
   \item Allocation_AU_GNIS_Percent: Percent of the GNIS assessment unit where a TMDL allocation applies.

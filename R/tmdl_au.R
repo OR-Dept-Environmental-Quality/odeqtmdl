@@ -51,7 +51,6 @@
 #'        \item Not Active: TMDL has been withdrawn, disapproved by EPA, and/or replaced with a newer TMDL.
 #'        \item In Development: TMDL is in development.
 #'        }
-#'   \item TMDL_status_comment: Note summarizing information about the TMDL and if it was revised or modified.
 #'   \item revision_action_id: The EPA ATTAINS action ID assigned to the TMDL revision.
 #'   \item Pollu_ID: DEQ water quality parameter ID. ID is for the parameter in 'TMDL_parameter'.
 #'   \item HUC6: Basin six digit USGS hydrological unit code
@@ -68,7 +67,6 @@
 #'   \item AU_Description: Assessment unit descriptions
 #'   \item TMDL_length_km: Length of the assessment unit in kilometers where TMDL_scope = 'TMDL'. Length is calculated using the linear flowline feature in Albers Equal Area projection.
 #'   \item Allocation_only_km: Length of the assessment unit in kilometers where TMDL_scope = 'Allocation only'.
-#'   \item Advisory_allocation_km:Length of the assessment unit in kilometers where TMDL_scope = 'Advisory allocation'.
 #'   \item AU_length_km: Length of the entire assessment unit in kilometers. Length is calculated using the linear flowline feature in Albers Equal Area projection.
 #'   \item TMDL_AU_Percent: Percent of the assessment unit where a TMDL has been developed to address a 303(d) listing or future listing.
 #'   \item Allocation_AU_Percent: Percent of the assessment unit where a TMDL allocation applies.
