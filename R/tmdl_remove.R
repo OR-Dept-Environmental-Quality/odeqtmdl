@@ -1,5 +1,6 @@
 #' Remove information from the TMDL package tables
 #'
+#' This function is intended to be used by DEQ staff only.
 #' Removes TMDL information from the odeqtmdl package tables. Removes all rows
 #' in existing package tables with the same 'action_id' identified
 #' in \code{action_ids}. There is no filtering for specific parameters or pollutants. All
@@ -89,6 +90,8 @@ tmdl_remove <- function(action_ids = NULL, package_path) {
   save(tmdl_targets, file = file.path(package_path, "data", "tmdl_targets.rda"))
 
   #- tmdl_WLA-----------------------------------------------------------------
+
+  cat("-- tmdl_wla\n")
 
   tmdl_wla <- odeqtmdl::tmdl_wla %>%
     dplyr::filter(!action_id %in% remove_action_ids) %>%

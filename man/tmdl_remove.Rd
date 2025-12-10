@@ -12,6 +12,7 @@ tmdl_remove(action_ids = NULL, package_path)
 \item{package_path}{Path to the top level directory of the odeqtmdl R package. The 'data', data_raw', and 'inst/extdata' folders must exist.}
 }
 \description{
+This function is intended to be used by DEQ staff only.
 Removes TMDL information from the odeqtmdl package tables. Removes all rows
 in existing package tables with the same 'action_id' identified
 in \code{action_ids}. There is no filtering for specific parameters or pollutants. All
