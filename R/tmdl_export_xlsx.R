@@ -19,15 +19,17 @@ tmdl_export_xlsx <- function(action_ids  = NULL, xlsx_filename = NULL) {
     stop("action_ids is NULL")
   }
 
- action_id_check <- any(!action_ids %in% tmdl_actions$action_id)
+  tmdl_actions <- odeqtmdl::tmdl_actions
 
- if(action_id_check) {
+  action_id_check <- any(!action_ids %in% tmdl_actions$action_id)
 
-   action_id_missing <- action_ids[!action_ids %in% tmdl_actions$action_id]
+  if(action_id_check) {
 
-   stop(paste0("The following action_ids are not the TMDL database: ",
-               paste0(action_id_missing, collapse = ", ")))
-   }
+    action_id_missing <- action_ids[!action_ids %in% tmdl_actions$action_id]
+
+    stop(paste0("The following action_ids are not the TMDL database: ",
+                paste0(action_id_missing, collapse = ", ")))
+  }
 
   if (is.null(xlsx_filename)) {
     stop("xlsx_filename is NULL")
@@ -50,17 +52,17 @@ tmdl_export_xlsx <- function(action_ids  = NULL, xlsx_filename = NULL) {
                   citation_full,
                   URL)
 
- #- tmdl_parameters -------------------------------------------------------------------
+  #- tmdl_parameters -------------------------------------------------------------------
 
- tmdl_parameters_ex <- tmdl_parameters |>
-   dplyr::filter(action_id %in% action_ids) |>
-   dplyr::left_join(tmdl_actions_ex[, c("action_id", "TMDL_name", "TMDL_issue_year")],
-                    by = "action_id") |>
-   dplyr::select(action_id,
-                 TMDL_name,
-                 TMDL_issue_year,
-                 TMDL_parameter,
-                 TMDL_pollutant)
+  tmdl_parameters_ex <- tmdl_parameters |>
+    dplyr::filter(action_id %in% action_ids) |>
+    dplyr::left_join(tmdl_actions_ex[, c("action_id", "TMDL_name", "TMDL_issue_year")],
+                     by = "action_id") |>
+    dplyr::select(action_id,
+                  TMDL_name,
+                  TMDL_issue_year,
+                  TMDL_parameter,
+                  TMDL_pollutant)
 
   #- tmdl_au -------------------------------------------------------------------
 
@@ -96,7 +98,7 @@ tmdl_export_xlsx <- function(action_ids  = NULL, xlsx_filename = NULL) {
   #- tmdl_geo_ids --------------------------------------------------------------
 
   tmdl_geo_ids_ex <- tmdl_geo_ids |>
-   dplyr::filter(action_id %in% action_ids) |>
+    dplyr::filter(action_id %in% action_ids) |>
     dplyr::left_join(tmdl_actions_ex[, c("action_id", "TMDL_name", "TMDL_issue_year")],
                      by = "action_id") |>
     dplyr::select(geo_id,
