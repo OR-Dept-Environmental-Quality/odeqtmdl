@@ -737,10 +737,21 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       dplyr::select(dplyr::all_of(cols_tmdl_reaches)) %>%
       as.data.frame()
 
+    # Remove the old rows and update with new ones
+    # CAREFUL HERE, overwrites tmdl_reaches
+    con <- DBI::dbConnect(duckdb::duckdb(), dbdir = file.path(package_path, "data_raw", "tmdl_reaches.duckdb"))
+
+    tmdl_reaches <- DBI::dbReadTable(con, "tmdl_reaches") %>%
+      dplyr::select(dplyr::all_of(cols_tmdl_reaches)) %>%
+      dplyr::filter(!(action_id %in% update_action_ids)) %>%
+      rbind(tmdl_reaches_update) %>%
+      dplyr::distinct() %>%
+      dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
+      as.data.frame()
+
     cat("-- tmdl_reaches (saving)\n")
 
     # Save a dev copy to a duckdb for fast reading.
-    con <- DBI::dbConnect(duckdb::duckdb(), dbdir = file.path(package_path, "data_raw", "tmdl_reaches.duckdb"))
     DBI::dbWriteTable(con, "tmdl_reaches", tmdl_reaches, overwrite = TRUE)
     duckdb::dbDisconnect(con, shutdown = TRUE)
 
