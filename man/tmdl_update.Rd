@@ -26,6 +26,7 @@ must be ESRI shapefiles and named in the following way:
       \item NHD reaches: 'action_[action_id]_[parameter]_[pollutant]_NHD'
       \item AU Flowlines: 'action_[action_id]_[parameter]_[pollutant]_AU_Flowline'
       \item AU Waterbodies: 'action_[action_id]_[parameter]_[pollutant]_AU_WB'
+      \item Geo IDs: 'action_[action_id]_[geo_id]_geo_ids'
       }
       where, action_id, parameter, and pollutant are user supplied.}
 
@@ -37,12 +38,13 @@ must be ESRI shapefiles and named in the following way:
   \item tmdl_parameters
   \item tmdl_geo_id
   \item tmdl_targets
+  \item tmdl_wla
   \item tmdl_ben_use
   }}
 
 \item{update_reaches}{logical. if TRUE, imports GIS files and updates the following package tables:
 \itemize{
-  \item tmdl_reaches
+  \item tmdl_target_reaches
   \item tmdl_au
   \item tmdl_au_gnis
   }}
