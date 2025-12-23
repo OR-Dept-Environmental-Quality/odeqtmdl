@@ -1,7 +1,7 @@
-// https://dbdiagram.io/d/TMDL_db_structure_2025-11-22-6926acaea0c4ebcc2bc2d6f3
-
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
+
+// https://dbdiagram.io/d/TMDL_db_structure_current-6926acaea0c4ebcc2bc2d6f3
 
 Table tmdl_actions {
   action_id  text [primary key]
@@ -55,26 +55,9 @@ Table tmdl_wla {
   facility_name text
 }
 
-Table tmdl_reaches {
-  action_id text
-  TMDL_parameter text
-  TMDL_pollutant text
-  TMDL_scope text
-  Period text
-  Source text
-  TMDL_status text
-  revision_action_id text
+Table tmdl_target_reaches {
   geo_id text
-  Pollu_ID numeric
-  HUC6 text
-  HU_6_Name text
-  HUC6_full text
-  HUC8 text
-  HU8_Name text
-  HUC8_full text
-  HUC10 text
-  HU10_Name text
-  HUC10_full text
+  action_id text
   GLOBALID text
   Permanent_Identifier text
   ReachCode text
@@ -85,6 +68,15 @@ Table tmdl_reaches {
   AU_Description text
   AU_GNIS_Name text
   AU_GNIS text
+  HUC6 text
+  HU_6_Name text
+  HUC6_full text
+  HUC8 text
+  HU8_Name text
+  HUC8_full text
+  HUC10 text
+  HU10_Name text
+  HUC10_full text
   LengthKM numeric
 }
 
@@ -182,33 +174,9 @@ Table LU_ben_use_code {
   ben_use text
 }
 
-// future
-Table LU_reaches {
-  GLOBALID text
-  Permanent_Identifier text
-  ReachCode text
-  GNIS_Name text
-  GNIS_ID integer
-  AU_ID text
-  AU_Name text
-  AU_Description text
-  AU_GNIS_Name text
-  AU_GNIS text
-  LengthKM numeric
-  HUC6 text
-  HU_6_Name text
-  HUC6_full text
-  HUC8 text
-  HU8_Name text
-  HUC8_full text
-  HUC10 text
-  HU10_Name text
-  HUC10_full text
-}
-
 Ref: "tmdl_actions"."action_id" < "tmdl_targets"."action_id"
 
-Ref: "tmdl_actions"."action_id" < "tmdl_reaches"."action_id"
+Ref: "tmdl_actions"."action_id" < "tmdl_target_reaches"."action_id"
 
 Ref: "tmdl_actions"."action_id" < "tmdl_au"."action_id"
 
@@ -222,4 +190,4 @@ Ref: "tmdl_actions"."action_id" < "tmdl_parameters"."action_id"
 
 Ref: "tmdl_geo_ids"."geo_id" < "tmdl_targets"."geo_id"
 
-Ref: "tmdl_geo_ids"."geo_id" < "tmdl_reaches"."geo_id"
+Ref: "tmdl_geo_ids"."geo_id" < "tmdl_target_reaches"."geo_id"
