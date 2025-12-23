@@ -14,7 +14,6 @@ data(tmdl_actions)
 Summary of TMDL actions applicable in Oregon. TMDLs developed by tribal governments are not included at this time.
 }
 \details{
-** Field removed in version 0.6.
 See \code{\link{tmdl_parameters}} for listings of all unique TMDL parameter and pollutant pairs.
 
 Database fields include:
