@@ -48,7 +48,7 @@
 tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path,
                         update_tables = TRUE, update_reaches = TRUE) {
 
-  # Check to make sure paths to path, data, data_raw, and inst/extdata exist
+  # Check to make sure paths to path, data and data_raw exist
   if (!file.exists(gis_path)) {
     stop(paste0("Error. Path in 'gis_path' not found: ", gis_path) )
   }
@@ -73,10 +73,6 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
 
     if (!file.exists(file.path(package_path, "data_raw"))) {
       stop(paste0("Error. There must be a 'data_raw' folder in 'package_path': ", file.path(package_path, "data_raw")) )
-    }
-
-    if (!file.exists(file.path(package_path, "inst", "extdata"))) {
-      stop(paste0("Error. There must be 'inst/extdata' folders in 'package_path': ", file.path(package_path, "inst", "extdata")) )
     }
   }
 
@@ -546,13 +542,6 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     } else {
 
       geo_id_tbl <- data.frame()
-    }
-
-    if (nrow(tmdl_reach_geo_ids) > 0) {
-      # if there are geo_id rows in reaches add them
-      geo_ids_tbl <- tmdl_reach_geo_ids |>
-        dplyr::bind_rows(geo_id_tbl) |>
-        dplyr::distinct()
     }
 
     #- import GIS: AU Flowlines ------------------------------------------------
