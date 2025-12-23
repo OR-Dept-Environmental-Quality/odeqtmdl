@@ -5,7 +5,7 @@
 \alias{tmdl_ben_use}
 \title{Beneficial uses being addressed by the TMDL}
 \format{
-An object of class \code{data.frame} with 305 rows and 5 columns.
+An object of class \code{data.frame} with 298 rows and 5 columns.
 }
 \usage{
 data(tmdl_ben_use)
