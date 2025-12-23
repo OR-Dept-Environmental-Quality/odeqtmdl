@@ -33,7 +33,6 @@
 #'   \item LengthKM: Length of linear feature based on Albers Equal Area.
 #' }
 #'
-#' @export
 #' @docType data
 #' @keywords datasets
 #' @return dataframe
