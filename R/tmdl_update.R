@@ -22,6 +22,7 @@
 #'          \item NHD reaches: 'action_[action_id]_[parameter]_[pollutant]_NHD'
 #'          \item AU Flowlines: 'action_[action_id]_[parameter]_[pollutant]_AU_Flowline'
 #'          \item AU Waterbodies: 'action_[action_id]_[parameter]_[pollutant]_AU_WB'
+#'          \item Geo IDs: 'action_[action_id]_[geo_id]_geo_ids'
 #'          }
 #'          where, action_id, parameter, and pollutant are user supplied.
 #'
@@ -33,11 +34,12 @@
 #'          \item tmdl_parameters
 #'          \item tmdl_geo_id
 #'          \item tmdl_targets
+#'          \item tmdl_wla
 #'          \item tmdl_ben_use
 #'          }
 #' @param update_reaches logical. if TRUE, imports GIS files and updates the following package tables:
 #'      \itemize{
-#'        \item tmdl_reaches
+#'        \item tmdl_target_reaches
 #'        \item tmdl_au
 #'        \item tmdl_au_gnis
 #'        }
@@ -318,7 +320,6 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                            "TMDL_status",
                            "revision_action_id",
                            "Pollu_ID",
-                           "geo_id",
                            "HUC6", "HUC6_Name", "HUC6_full",
                            "HUC8", "HUC8_Name", "HUC8_full",
                            "HUC10", "HUC10_Name", "HUC10_full",
@@ -329,6 +330,16 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                            "AU_ID", "AU_Name", "AU_Description",
                            "AU_GNIS_Name", "AU_GNIS",
                            "LengthKM")
+
+    cols_tmdl_target_reaches <- c("geo_id", "action_id","GLOBALID",
+                                  "Permanent_Identifier", "ReachCode",
+                                  "GNIS_Name", "GNIS_ID",
+                                  "AU_ID", "AU_Name", "AU_Description",
+                                  "AU_GNIS_Name", "AU_GNIS",
+                                  "HUC6", "HUC6_Name", "HUC6_full",
+                                  "HUC8", "HUC8_Name", "HUC8_full",
+                                  "HUC10", "HUC10_Name", "HUC10_full",
+                                  "LengthKM")
 
     cols_tmdl_au_gnis <- c("action_id", "TMDL_parameter", "TMDL_pollutant",
                            "TMDL_scope", "Period", "Source",
@@ -521,30 +532,27 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                                    layer = gid_layer,
                                    stringsAsFactors = FALSE) %>%
           sf::st_drop_geometry() %>%
-          dplyr::rename(dplyr::any_of(c(period = "Period", Source = "source"))) %>%
-          {
-            if ("TMDL_scope" %in% names(.)) . else  dplyr::mutate(., TMDL_scope = NA_character_)
-          } %>%
-          {
-            if ("period" %in% names(.)) . else  dplyr::mutate(., period = NA_character_)
-          } %>%
-          {
-            if ("Source" %in% names(.)) . else  dplyr::mutate(., Source = NA_character_)
-          }  %>%
-          {
-            if ("geo_id" %in% names(.)) . else  dplyr::mutate(., geo_id = NA_character_)
-          } %>%
           {
             if ("GLOBALID" %in% names(.)) . else  dplyr::mutate(., GLOBALID = NA_character_)
           } %>%
-          dplyr::select(action_id, TMDL_parameter = TMDL_param,
-                        TMDL_pollutant = TMDL_pollu, geo_id, GLOBALID) %>%
+          dplyr::select(action_id, geo_id, GLOBALID) %>%
           dplyr::filter(action_id %in% update_action_ids)
 
         geo_id_tbl <- rbind(geo_id_tbl, geo_id_tbl0)
 
         rm(geo_id_tbl0)
       }
+
+    } else {
+
+      geo_id_tbl <- data.frame()
+    }
+
+    if (nrow(tmdl_reach_geo_ids) > 0) {
+      # if there are geo_id rows in reaches add them
+      geo_ids_tbl <- tmdl_reach_geo_ids |>
+        dplyr::bind_rows(geo_id_tbl) |>
+        dplyr::distinct()
     }
 
     #- import GIS: AU Flowlines ------------------------------------------------
@@ -729,49 +737,12 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
       dplyr::select(dplyr::all_of(cols_tmdl_reaches)) %>%
       as.data.frame()
 
-    # Remove the old rows and update with new ones
-    # CAREFUL HERE, overwrites tmdl_reaches
-    tmdl_reaches <- odeqtmdl::tmdl_reaches() %>%
-      dplyr::select(dplyr::all_of(cols_tmdl_reaches)) %>%
-      dplyr::filter(!(action_id %in% update_action_ids)) %>%
-      rbind(tmdl_reaches_update) %>%
-      dplyr::distinct() %>%
-      dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
-      as.data.frame()
-
-    # the number of RDS files that tmdl_reaches dataframe is separated into.
-    # This number should be set so each file is < 50 MB to avoid GitHub commit warnings.
-    # As of 2024, the maximum file size allowed on GitHub is 100 MB.
-    num_df <- 6
-
-    tmdl_reaches0 <- tmdl_reaches %>%
-      dplyr::group_by((dplyr::row_number() - 1 ) %/% ( dplyr::n() / num_df)) %>%
-      tidyr::nest() %>%
-      dplyr::pull(data)
-
-    tmdl_reaches1 <- tmdl_reaches0[[1]] %>% as.data.frame()
-    tmdl_reaches2 <- tmdl_reaches0[[2]] %>% as.data.frame()
-    tmdl_reaches3 <- tmdl_reaches0[[3]] %>% as.data.frame()
-    tmdl_reaches4 <- tmdl_reaches0[[4]] %>% as.data.frame()
-    tmdl_reaches5 <- tmdl_reaches0[[5]] %>% as.data.frame()
-    tmdl_reaches6 <- tmdl_reaches0[[6]] %>% as.data.frame()
-
     cat("-- tmdl_reaches (saving)\n")
 
     # Save a dev copy to a duckdb for fast reading.
     con <- DBI::dbConnect(duckdb::duckdb(), dbdir = file.path(package_path, "data_raw", "tmdl_reaches.duckdb"))
     DBI::dbWriteTable(con, "tmdl_reaches", tmdl_reaches, overwrite = TRUE)
     duckdb::dbDisconnect(con, shutdown = TRUE)
-
-    # Save as a RDS file in inst/extdata folder (replaces existing)
-    # File is too large to save in data and as single file
-    # Ideally each file should be < 50 MB to avoid GitHub warnings.
-    saveRDS(tmdl_reaches1, compress = TRUE, file = file.path(package_path, "inst", "extdata", "tmdl_reaches1.RDS"))
-    saveRDS(tmdl_reaches2, compress = TRUE, file = file.path(package_path, "inst", "extdata", "tmdl_reaches2.RDS"))
-    saveRDS(tmdl_reaches3, compress = TRUE, file = file.path(package_path, "inst", "extdata", "tmdl_reaches3.RDS"))
-    saveRDS(tmdl_reaches4, compress = TRUE, file = file.path(package_path, "inst", "extdata", "tmdl_reaches4.RDS"))
-    saveRDS(tmdl_reaches5, compress = TRUE, file = file.path(package_path, "inst", "extdata", "tmdl_reaches5.RDS"))
-    saveRDS(tmdl_reaches6, compress = TRUE, file = file.path(package_path, "inst", "extdata", "tmdl_reaches6.RDS"))
 
     #- tmdl_au_gnis ------------------------------------------------------------
 
@@ -897,61 +868,30 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     # Save a copy in data folder (replaces existing)
     save(tmdl_au, file = file.path(package_path, "data", "tmdl_au.rda"))
 
-    #- tmdl_geo_ids_reaches-----------------------------------------------------
+    #- tmdl_target_reaches-----------------------------------------------------
 
+    # filter only rows with geo_ids from the reach table
+    tmdl_target_reaches_update <- tmdl_reach_tbl |>
+      dplyr::filter(!is.na(geo_id)) |>
+      dplyr::select(action_id, geo_id, GLOBALID) |>
+      dplyr::bind_rows(geo_id_tbl) |>
+      dplyr::left_join(ornhd, by = "GLOBALID") %>%
+      dplyr::filter(!AU_ID == "99") %>%
+      dplyr::select(dplyr::all_of(cols_tmdl_target_reaches)) |>
+      dplyr::distinct()
 
-    # tmdl_geo_id_reaches_update <- geo_id_tbl %>%
-    #   dplyr::select(GLOBALID, action_id, TMDL_parameter,
-    #                 TMDL_pollutant, geo_id) %>%
-    #   dplyr::left_join(ornhd, by = "GLOBALID") %>%
-    #   dplyr::filter(!AU_ID == "99") %>%
-    #   dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, geo_id, AU_ID, ReachCode) %>%
-    #   dplyr::distinct() %>%
-    #   dplyr::left_join(odeqtmdl::LU_pollutant[,c("Pollu_ID", "Pollutant_DEQ")],
-    #                    by = c("TMDL_parameter" = "Pollutant_DEQ")) %>%
-    #   dplyr::select(action_id,
-    #                 TMDL_parameter,
-    #                 TMDL_pollutant,
-    #                 Pollu_ID,
-    #                 geo_id,
-    #                 HUC6, HUC6_Name, HUC6_full,
-    #                 HUC8, HUC8_Name, HUC8_full,
-    #                 HUC10, HUC10_Name, HUC10_full,
-    #                 GLOBALID,
-    #                 Permanent_Identifier,
-    #                 ReachCode,
-    #                 GNIS_Name, GNIS_ID,
-    #                 AU_ID, AU_Name, AU_Description,
-    #                 AU_GNIS_Name, AU_GNIS,
-    #                 LengthKM) %>%
-    #   as.data.frame()
-    #
-    # # Remove the old rows and update with new ones
-    # # CAREFUL HERE, overwrites tmdl_reaches
-    # tmdl_reaches <- odeqtmdl::tmdl_reaches() %>%
-    #   dplyr::filter(!(action_id %in% update_action_ids)) %>%
-    #   rbind(tmdl_reaches_update) %>%
-    #   dplyr::distinct() %>%
-    #   dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
-    #   as.data.frame()
-    #
-    #
-    # tmdl_reach_geo_ids_only <- tmdl_reaches |>
-    #   dplyr::filter(!is.na(geo_id)) %>%
-    #   dplyr::select(geo_id, HUC6, HUC6_Name, HUC6_full, HUC8, HUC8_Name, HUC8_full, GLOBALID) %>%
-    #   dplyr::distinct()
-    #
-    # geo_ids_tbl %>%
-    #   dplyr::left_join(ornhd, by = "GLOBALID") %>%
-    #
-    # tmdl_geo_ids <- tmdl_geo_id_fc %>%
-    #   dplyr::inner_join(y = tmdl_reach_geo_ids_only, by = "GLOBALID") %>%
-    #   dplyr::group_by(geo_id, HUC6, HUC6_Name, HUC6_full, HUC8, HUC8_Name, HUC8_full,
-    #            AU_ID, AU_Name, AU_Description, AU_WBType,
-    #            AU_GNIS, AU_GNIS_Name) %>%
-    #   dplyr::summarize() %>%
-    #   dplyr::ungroup() %>%
-    #   dplyr::arrange(geo_id, AU_ID, AU_GNIS)
+    # Remove the old rows and update with new ones
+    # CAREFUL HERE, overwrites tmdl_reaches
+    tmdl_target_reaches <- odeqtmdl::tmdl_target_reaches %>%
+      dplyr::select(dplyr::all_of(cols_tmdl_target_reaches)) %>%
+      dplyr::filter(!(action_id %in% update_action_ids)) %>%
+      rbind(tmdl_target_reaches_update) %>%
+      dplyr::distinct() %>%
+      dplyr::arrange(geo_id, action_id, ReachCode) %>%
+      as.data.frame()
+
+    # Save a copy in data folder (replaces existing)
+    save(tmdl_target_reaches, file = file.path(package_path, "data", "tmdl_target_reaches.rda"))
 
   }
 
