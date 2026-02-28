@@ -2,7 +2,7 @@
 #'
 #' This function is intended to be used by DEQ staff only.
 #' Imports TMDL information from DEQ's TMDL database template and GIS shapefiles; and
-#' add the new or revised the information to the odeqtmdl package tables. To
+#' adds the new or revised information to the odeqtmdl package tables. To
 #' run this function the xlsx template and/or the parameter/pollutant pair GIS files
 #' must be completed.
 #'
@@ -152,7 +152,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     #                         TRUE ~ TMDL_status),
 
     # Note the status columns are still in the xlsx sheet but they are not imported
-    # to database
+    # to the database. Status is now tracked in tmdl_status.
     tmdl_parameters_update <- readxl::read_excel(path = file.path(xlsx_template),
                                                  sheet = "tmdl_parameters",
                                                  na = c("", "NA"),
@@ -428,6 +428,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     # tmdl_status --------------------------------------------------------------
 
     # Import the status from the tmdl_status spreadsheet in the template.
+    # Status is incorporated into tmdl_au and tmdl_au_gnis tables.
     # The approach to updating status needs some thought and this may be temporary
 
     tmdl_status <- readxl::read_excel(path = file.path(xlsx_template),

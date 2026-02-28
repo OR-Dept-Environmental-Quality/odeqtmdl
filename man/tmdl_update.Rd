@@ -52,7 +52,7 @@ must be ESRI shapefiles and named in the following way:
 \description{
 This function is intended to be used by DEQ staff only.
 Imports TMDL information from DEQ's TMDL database template and GIS shapefiles; and
-add the new or revised the information to the odeqtmdl package tables. To
+adds the new or revised information to the odeqtmdl package tables. To
 run this function the xlsx template and/or the parameter/pollutant pair GIS files
 must be completed.
 }

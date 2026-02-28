@@ -16,8 +16,7 @@ This function is intended to be used by DEQ staff only.
 Removes TMDL information from the odeqtmdl package tables. Removes all rows
 in existing package tables with the same 'action_id' identified
 in \code{action_ids}. There is no filtering for specific parameters or pollutants. All
-information attributed to the action_id is removed. Use \code{\link{tmdl_update}}
-to update or add new information. Removes rows from the following package tables:
+information attributed to the action_id is removed.Removes rows from the following package tables:
 \itemize{
      \item tmdl_actions
      \item tmdl_targets
@@ -28,4 +27,7 @@ to update or add new information. Removes rows from the following package tables
      \item tmdl_au_gnis
      \item tmdl_parameters
      }
+}
+\details{
+Use \code{\link{tmdl_update}} to update or add new information.
 }
