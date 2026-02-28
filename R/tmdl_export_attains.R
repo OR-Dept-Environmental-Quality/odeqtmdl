@@ -28,6 +28,9 @@ tmdl_export_attains <- function(out_dir,
                                 TMDL_param = NULL,
                                 TMDL_pollu = NULL) {
 
+
+  ATTAINS_TEMPLATE_VER <- "1.4 released on 2022-07-18"
+
   if (is.null(df_tmdl_actions)) {
     df_actions <- odeqtmdl::tmdl_actions
   } else {
@@ -104,7 +107,8 @@ tmdl_export_attains <- function(out_dir,
   # - Actions --------------------------------------------------------------------
 
   actions_csv <- df %>%
-    dplyr::mutate(AGENCY_CODE = "S",
+    dplyr::mutate(AGENCY_CODE = dplyr::case_when(issue_agency == "EPA" ~ "E",
+                                                 TRUE ~ "S"),
                   ACTION_TYPE = "TMDL",
                   ACTION_STATUS = "Draft",
                   ACTION_COMMENT = TMDL_comment,
@@ -206,13 +210,18 @@ tmdl_export_attains <- function(out_dir,
 
   readme_txt <- c(paste0("ATTAINS batch upload csv files were generated using the odeqtmdl R package version ", packageDescription(pkg = "odeqtmdl")[["Version"]],"."),
                   "",
-                  paste0("Export on ", Sys.time())
+                  paste0("Output CSV format based on EPA ATTAINS batch upload template version ",ATTAINS_TEMPLATE_VER,"."),
+                  "",
+                  paste0("Action IDs exported: ", paste0(unique(actions_csv$ACTION_ID), collapse = "; ")),
+                  "",
+                  paste0("Exported on ", Sys.time())
                   )
 
   file.create(file.path(out_dir,"README.txt"))
 
   writeLines(text = readme_txt, con = file.path(out_dir,"README.txt"))
 
+  return(1)
 
 }
 
