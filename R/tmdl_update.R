@@ -515,7 +515,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
     gid.shps <- gid.shps[ !grepl("Supporting", gid.shps, ignore.case = TRUE) ]
 
     # Load all the shps into a dataframe'
-    geo_ids_tbl <- data.frame()
+    geo_id_tbl <- data.frame()
 
     if (!identical(gid.shps, character(0))) {
       # Only continue if there are shapefiles
@@ -605,30 +605,21 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
         dplyr::inner_join(AU_flow_tbl, by = "AU_ID", relationship = "many-to-many") %>%
         dplyr::arrange(action_id, TMDL_parameter, TMDL_pollutant, AU_ID, ReachCode) %>%
         dplyr::distinct() %>%
-        dplyr::left_join(odeqtmdl::LU_pollutant[,c("Pollu_ID", "Pollutant_DEQ")],
-                         by = c("TMDL_parameter" = "Pollutant_DEQ")) %>%
         dplyr::select(action_id,
                       TMDL_parameter,
                       TMDL_pollutant,
                       TMDL_scope,
                       Period,
                       Source,
-                      Pollu_ID,
                       geo_id,
-                      HUC6, HUC6_Name, HUC6_full,
-                      HUC8, HUC8_Name, HUC8_full,
-                      HUC10, HUC10_Name, HUC10_full,
-                      GLOBALID,
-                      Permanent_Identifier,
-                      ReachCode,
-                      GNIS_Name, GNIS_ID,
-                      AU_ID, AU_Name, AU_Description,
-                      AU_GNIS_Name, AU_GNIS,
-                      LengthKM) %>%
+                      GLOBALID) %>%
         as.data.frame()
 
+      # TODO 
+      # If geo_ids are in one feature but not in the other this will duplicate those rows.
+      # NEED TO FIX by removing geo_ids from all features except geo_id import.
       tmdl_reach_tbl <- rbind(tmdl_reach_tbl, tmdl_reach_tbl0) %>%
-        dplyr::disticnt()
+        dplyr::distinct()
 
     }
 
