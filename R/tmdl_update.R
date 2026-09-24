@@ -97,8 +97,8 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                                            na = c("", "NA"), skip = 1,
                                            col_names = TRUE,
                                            col_types = c("text", "text", 'numeric', "text", "text",
-                                                         "logical", "text", "date", "date", "text",
-                                                         "text", "text"))
+                                                         "logical", "text", "date", "date", "date",
+                                                         "text", "text", "text"))
 
     tmdl_actions_update <- tmdl_actions_tbl %>%
       dplyr::filter(action_id %in% update_action_ids) %>%
@@ -109,6 +109,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                     in_attains,
                     attains_status,
                     TMDL_issue_date,
+                    #EPA_submittal_date,
                     EPA_action_date,
                     citation_abbreviated,
                     citation_full,
@@ -116,6 +117,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                     URL) %>%
       dplyr::distinct() %>%
       dplyr::mutate(TMDL_issue_date = as.Date(TMDL_issue_date),
+                    #EPA_submittal_date = as.Date(EPA_submittal_date),
                     EPA_action_date = as.Date(EPA_action_date)) %>%
       dplyr::arrange(TMDL_issue_year,
                      TMDL_name) %>%
@@ -615,7 +617,7 @@ tmdl_update <- function(action_ids = NULL, xlsx_template, gis_path, package_path
                       GLOBALID) %>%
         as.data.frame()
 
-      # TODO 
+      # TODO
       # If geo_ids are in one feature but not in the other this will duplicate those rows.
       # NEED TO FIX by removing geo_ids from all features except geo_id import.
       tmdl_reach_tbl <- rbind(tmdl_reach_tbl, tmdl_reach_tbl0) %>%
