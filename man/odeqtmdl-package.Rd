@@ -13,6 +13,7 @@ The odeqtmdl R package includes data tables of Oregon Total Maximum Daily Load (
 
 Authors:
 \itemize{
+  \item Ryan Michie \email{Ryan.Michie@deq.oregon.gov}
   \item Colin Donald \email{Colin.Donald@deq.oregon.gov}
 }
 
